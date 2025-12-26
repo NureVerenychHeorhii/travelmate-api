@@ -3,7 +3,7 @@ package ua.nure.verenych.travelmate_api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ua.nure.verenych.travelmate_api.model.Booking;
-import ua.nure.verenych.travelmate_api.repository.BookingRepository;
+import ua.nure.verenych.travelmate_api.service.BookingService;
 
 import java.util.List;
 
@@ -12,31 +12,21 @@ import java.util.List;
 public class BookingController {
 
     @Autowired
-    private BookingRepository bookingRepository;
+    private BookingService bookingService; // Тепер звертаємось до Сервісу, а не Репозиторію
 
-    // Історія бронювань
     @GetMapping
     public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+        return bookingService.getAllBookings();
     }
 
-    // Створити бронювання
+    // Оновлений метод створення
     @PostMapping
     public Booking createBooking(@RequestBody Booking booking) {
-        return bookingRepository.save(booking);
-    }
-
-    // Оновити статус (наприклад, CONFIRMED або CANCELLED)
-    @PutMapping("/{id}")
-    public Booking updateBookingStatus(@PathVariable Long id, @RequestBody Booking bookingDetails) {
-        Booking booking = bookingRepository.findById(id).orElseThrow();
-        booking.setStatus(bookingDetails.getStatus());
-        return bookingRepository.save(booking);
-    }
-
-    // Видалити бронювання (скасування)
-    @DeleteMapping("/{id}")
-    public void deleteBooking(@PathVariable Long id) {
-        bookingRepository.deleteById(id);
+        // Ми очікуємо, що в JSON прийде user: {id: 1}, car: {id: 1}
+        return bookingService.createBooking(
+                booking.getUser().getId(),
+                booking.getCar().getId(),
+                booking
+        );
     }
 }
