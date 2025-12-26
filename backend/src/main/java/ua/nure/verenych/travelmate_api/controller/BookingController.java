@@ -14,14 +14,29 @@ public class BookingController {
     @Autowired
     private BookingRepository bookingRepository;
 
+    // Історія бронювань
     @GetMapping
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
 
+    // Створити бронювання
     @PostMapping
     public Booking createBooking(@RequestBody Booking booking) {
-        // Тут Spring сам знайде user_id та car_id в JSON і прив'яже їх
         return bookingRepository.save(booking);
+    }
+
+    // Оновити статус (наприклад, CONFIRMED або CANCELLED)
+    @PutMapping("/{id}")
+    public Booking updateBookingStatus(@PathVariable Long id, @RequestBody Booking bookingDetails) {
+        Booking booking = bookingRepository.findById(id).orElseThrow();
+        booking.setStatus(bookingDetails.getStatus());
+        return bookingRepository.save(booking);
+    }
+
+    // Видалити бронювання (скасування)
+    @DeleteMapping("/{id}")
+    public void deleteBooking(@PathVariable Long id) {
+        bookingRepository.deleteById(id);
     }
 }
