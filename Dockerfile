@@ -1,19 +1,19 @@
 # Етап 1: Збірка (Build)
 FROM maven:3.8.5-openjdk-17 AS build
-# 👇 Створюємо робочу папку. Це критично важливо!
 WORKDIR /app
 
-# Копіюємо файли з GitHub у цю папку /app
+# Копіюємо всі файли
 COPY . .
 
-# Запускаємо збірку саме в цій папці
+# Збираємо проект
 RUN mvn clean package -DskipTests
 
 # Етап 2: Запуск (Run)
-FROM openjdk:17-jdk-slim
+# 👇 МИ ЗАМІНИЛИ ЦЕЙ РЯДОК (було openjdk:17-jdk-slim)
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# 👇 Копіюємо готовий JAR-файл із папки /app/target попереднього етапу
+# Копіюємо JAR
 COPY --from=build /app/target/travelmate-api-0.0.1-SNAPSHOT.jar travelmate-api.jar
 
 EXPOSE 8081
